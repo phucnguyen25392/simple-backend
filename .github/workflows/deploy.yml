@@ -13,13 +13,6 @@ jobs:
       with:
         username: ${{ vars.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}
-        tags: |
-          type=semver,pattern={{raw}}
     - name: calculate tags
       id: calculate_meta
       run: |
@@ -36,11 +29,10 @@ jobs:
             next_page=$(echo $result | jq -r '.next')
         done
 
-        for tag in "${tags[@]}"; do echo "$tag"; done
-
         tag=${tags[0]}
         echo $tag
-        echo "${tag%.*}.$((${tag##*.}+1))" >> $GITHUB_OUTPUT
+        new_tag=${${tag%.*}.$((${tag##*.}+1))}
+        echo $new_tag >> $GITHUB_OUTPUT
     - name: build docker
       run: | 
         docker build -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.stdout }} .
