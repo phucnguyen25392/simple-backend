@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  deploy:
+    name: build
+    runs-on: ubuntu-22.04
+    environment: docker hub
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v3
+    - name: Log in to the Container registry
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ env.DOCKER_REGISTRY }}
+        username: ${{ env.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
+    - name: calculate tags
+      id: calculate_meta
+      shell: bash
+      run: |
+        tags=${{ steps.meta.outputs.tags }}
+        tag=${tags[${#tags[@]} - 1]}
+        echo "${tag%.*}.$((${tag##*.}+1))\n" >> $GITHUB_OUTPUT
+    - name: build docker
+      shell: bash
+      run: | 
+        docker build -t ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.stdout }} .
+    - name: push to docker hub
+      shell: bash
+      run: |
+        docker push ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.stdout }} .
+
+
+
