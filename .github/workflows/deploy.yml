@@ -19,7 +19,7 @@ jobs:
       with:
         images: ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}
         tags: |
-          type=match,pattern=\d.\d.\d
+          type=semver,pattern={{raw}}
     - name: calculate tags
       id: calculate_meta
       run: |
