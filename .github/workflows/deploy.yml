@@ -23,9 +23,24 @@ jobs:
     - name: calculate tags
       id: calculate_meta
       run: |
-        tags=${{ steps.meta.outputs.tags }}
-        tag=${tags[${#tags[@]} - 1]}
-        echo "${tag%.*}.$((${tag##*.}+1))\n" >> $GITHUB_OUTPUT
+        REGISTRY=realmaxwebapp
+        REPOSITORY=my_backend
+
+        next_page="https://registry.hub.docker.com/v2/namespaces/$REGISTRY/repositories/$REPOSITORY/tags?page=1&page_size=1000"
+        tags=()
+        while [ "$next_page" != "null" ]
+        do
+            result=$(curl -s "$next_page")
+            tag=`echo $result | jq -r '.results[].name' | grep -E '^1.*0'`
+            tags=("${tags[@]}" $tag)
+            next_page=$(echo $result | jq -r '.next')
+        done
+
+        for tag in "${tags[@]}"; do echo "$tag"; done
+
+        tag=${tags[0]}
+        echo $tag
+        echo "${tag%.*}.$((${tag##*.}+1))" >> $GITHUB_OUTPUT
     - name: build docker
       run: | 
         docker build -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.stdout }} .
