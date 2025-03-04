@@ -209,7 +209,7 @@ func main() {
 
 	promHandler := prometheusMiddleware(mux)
 
-	fmt.Println("Server is listening on port 8080")
+	fmt.Println("Server is listening on port 8080 test")
 	if err := http.ListenAndServe(":8080", promHandler); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
