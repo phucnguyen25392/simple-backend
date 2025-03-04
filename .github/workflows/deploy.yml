@@ -35,7 +35,7 @@ jobs:
         echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
     - name: build and push docker
       run: | 
-        docker build --platform=linux/arm64 -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.new_tag }} --push .
+        docker build --platform=linux/amd64 -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.new_tag }} --push .
 
 
 
