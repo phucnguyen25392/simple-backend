@@ -32,7 +32,7 @@ jobs:
         tag=${tags[0]}
         echo $tag
         new_tag=`echo ${tag%.*}.$((${tag##*.}+1))`
-        echo $new_tag >> $GITHUB_OUTPUT
+        echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
     - name: build docker
       run: | 
         docker build -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.stdout }} .
