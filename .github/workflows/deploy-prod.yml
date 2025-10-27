@@ -25,7 +25,7 @@ jobs:
           result=$(curl -s "$next_page")
           tags=()
 
-          if [ "$result" != "null" ]; then
+          if [[ "$result" != *"not found"* ]]; then
             tag=`echo $result | jq -r '.results[].name' | grep -E '^1.*0'`
             tags=("${tags[@]}" $tag)
             while [ "$next_page" != "null" ];
