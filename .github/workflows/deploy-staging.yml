@@ -54,4 +54,6 @@ jobs:
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
       - name: build and push docker
         run: |
+          REGISTRY=realmaxwebapp1
+          REPOSITORY=my_backend
           docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:${{ steps.calculate_meta.outputs.new_tag }} --push .
