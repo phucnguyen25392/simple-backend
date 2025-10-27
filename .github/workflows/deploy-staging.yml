@@ -52,4 +52,4 @@ jobs:
         run: |
           REGISTRY=realmaxwebapp1
           REPOSITORY=my_backend
-          docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:${{ steps.calculate_meta.outputs.new_tag }} --push .
+          docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:${{ needs.build.outputs.new_tag }} --push .
