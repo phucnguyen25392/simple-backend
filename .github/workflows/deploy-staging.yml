@@ -17,6 +17,8 @@ jobs:
       runs-on: ubuntu-22.04
       environment: docker hub
       steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
