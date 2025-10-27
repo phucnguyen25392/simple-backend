@@ -9,6 +9,14 @@ jobs:
       steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+      - name: Go build
+        run: |
+          go build main
+  docker-build-push:
+      needs: build
+      runs-on: ubuntu-22.04
+      environment: docker hub
+      steps:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -44,16 +52,6 @@ jobs:
             new_tag=`echo 1.0.0`
           fi
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
-          echo "$new_tag"
-  docker-build-push:
-      needs: build
-      runs-on: ubuntu-22.04
-      environment: docker hub
-      steps:
       - name: build and push docker
         run: |
-          REGISTRY=realmaxwebapp1
-          REPOSITORY=my_backend
-          tag=${{ needs.build.outputs.new_tag }}
-          echo "$tag"
-          docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:$tag --push .
+          docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:${{ steps.calculate_meta.outputs.new_tag }} --push .
