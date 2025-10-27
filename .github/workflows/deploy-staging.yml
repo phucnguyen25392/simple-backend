@@ -26,30 +26,35 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: calculate tags
         id: calculate_meta
+        shell: bash
         run: |
           REGISTRY=realmaxwebapp1
           REPOSITORY=my_backend
-
           next_page="https://registry.hub.docker.com/v2/namespaces/$REGISTRY/repositories/$REPOSITORY/tags?page=1&page_size=1000"
-          tags=()
-          result=$(curl -s "$next_page")
+
+          TOKEN=$(curl -s -H "Content-Type: application/json" \
+            -X POST \
+            -d "{\"username\": \"${{ vars.DOCKER_USER_STG }}\", \"password\": \"${{ secrets.DOCKER_PASSWORD }}\"}" \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+
+
+          result=$(curl -s -H "Authorization: JWT $TOKEN" \
+            "$next_page" \
+            | jq '.results[].name'| tr '\n' ' ')
           tags=()
 
-          if [[ "$result" != *"not found"* ]]; then
-            tag=`echo $result | jq -r '.results[].name' | grep -E '^1.*0'`
-            tags=("${tags[@]}" $tag)
-            while [ "$next_page" != "null" ];
-            do
-              result=$(curl -s "$next_page")
-              tag=`echo $result | jq -r '.results[].name' | grep -E '^1.*0'`
-              tags=("${tags[@]}" $tag)
-              next_page=$(echo $result | jq -r '.next')
-            done
+          if [[ "${result[*]}" != *"not found"* ]]; then
+            read -r -a result_array <<< $(echo $result)
+            if [ "${#result_array[@]}" -gt 1 ]; then
+              tag=${result_array[0]}
+            else
+              tag=$result
+            fi
           fi
-          tag=${tags[0]}
           echo "Tag: $tag"
-          if expr "$tag" : '^[0-9]\.' >/dev/null; then
-            new_tag=`echo ${tag%.*}.$((${tag##*.}+1))`
+          tagged=${tag//\"/}
+          if expr "$tagged" : '^[0-9]\.' >/dev/null; then
+            new_tag=`echo ${tagged%.*}.$((${tagged##*.}+1))`
           else
             new_tag=`echo 1.0.0`
           fi
