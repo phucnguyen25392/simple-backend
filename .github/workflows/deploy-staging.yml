@@ -44,6 +44,7 @@ jobs:
             new_tag=`echo 1.0.0`
           fi
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+          echo "$new_tag"
   docker-build-push:
       needs: build
       runs-on: ubuntu-22.04
