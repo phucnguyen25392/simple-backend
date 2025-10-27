@@ -21,6 +21,7 @@ const (
 	user     = "api"
 	password = "123"
 	dbname   = "mydb"
+	version  = "1.0.9"
 )
 
 // const (
