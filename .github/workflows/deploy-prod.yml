@@ -51,5 +51,5 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag ${{ step.calculate_meta.outputs.new_tag }}
+          git tag ${{ steps.calculate_meta.outputs.new_tag }}
           git push origin $TAG
