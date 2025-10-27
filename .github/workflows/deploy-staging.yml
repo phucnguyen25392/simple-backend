@@ -54,6 +54,6 @@ jobs:
         run: |
           REGISTRY=realmaxwebapp1
           REPOSITORY=my_backend
-          tag="${{ needs.build.outputs.new_tag }}"
+          tag=${{ needs.build.outputs.new_tag }}
           echo "$tag"
           docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:$tag --push .
