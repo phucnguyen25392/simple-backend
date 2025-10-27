@@ -44,6 +44,12 @@ jobs:
             new_tag=`echo 1.0.0`
           fi
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+  docker:
+      runs-on: ubuntu-22.04
+      environment: docker hub
+      steps:
       - name: build and push docker
-        run: | 
-          docker build --platform=linux/amd64 -t ${{ vars.DOCKER_REGISTRY }}/${{ vars.IMAGE_NAME }}:${{ steps.calculate_meta.outputs.new_tag }} --push .
+        run: |
+          REGISTRY=realmaxwebapp1
+          REPOSITORY=my_backend
+          docker build --platform=linux/amd64 -t $REGISTRY/$REPOSITORY:${{ steps.calculate_meta.outputs.new_tag }} --push .
