@@ -22,7 +22,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
-          username: ${{ vars.DOCKER_USER }}
+          username: ${{ vars.DOCKER_USER_STG }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: calculate tags
         id: calculate_meta
