@@ -54,8 +54,9 @@ object Build : BuildType({
 
     triggers {
         vcs {
-            triggerRules = "+:teamcity*"
-            branchFilter = ""
+            branchFilter = """
+                +:refs/heads/teamcity
+            """.trimIndent()
             enableQueueOptimization = false
         }
     }
